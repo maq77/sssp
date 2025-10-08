@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <Protobuf Include="..\..\apps\ai-fastapi\proto\inference.proto" GrpcServices="Client" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
