@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
+    ports: ["1433:1433"]
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Your_password123", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: ["5672:5672","15672:15672"]
+
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin12345
+    ports: ["9000:9000","9001:9001"]
+
+  ai-fastapi:
+    build: ../../apps/ai-fastapi
+    env_file: ../../.env
+    depends_on: [redis]
+    ports: ["8000:8000","50051:50051"]
+
+  api-dotnet:
+    build: ../../apps/api-dotnet
+    env_file: ../../.env
+    depends_on: [sqlserver, redis, rabbitmq, ai-fastapi]
+    ports: ["8080:8080"]
+
+  web-dashboard:
+    build: ../../apps/web-dashboard
+    env_file: ../../.env
+    depends_on: [api-dotnet]
+    ports: ["5173:5173"]
