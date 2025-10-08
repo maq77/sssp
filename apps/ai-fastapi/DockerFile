@@ -1,0 +1,9 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+# compile proto
+RUN python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. proto/inference.proto
+# run both: fastapi (8000) and grpc (50051)
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 & python grpc_server.py"
