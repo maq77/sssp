@@ -1,12 +1,34 @@
-name: ci
-on:
-  pull_request:
-  push:
-    branches: [ main ]
+name: CI
+on: [push, pull_request]
+
 jobs:
-  build:
+  api-dotnet:
     runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/api-dotnet } }
     steps:
       - uses: actions/checkout@v4
-      - name: Run checks
-        run: echo "OK"
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore
+      - run: dotnet test --no-build --verbosity normal
+
+  ai-fastapi:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/ai-fastapi } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  web-dashboard:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/web-dashboard } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npm run build
