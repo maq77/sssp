@@ -1,1 +1,212 @@
-# sssp
+# SSSP - Smart Security & Sustainability Platform
+
+AI-powered IoT platform for smart cities combining security monitoring, environmental sustainability, and citizen engagement.
+
+
+# 🧱 SSSP Project – Developer Guide
+
+> Full-stack project including:
+> - **api-dotnet** (.NET backend)
+> - **ai-fastapi** (Python AI service)
+> - **web-dashboard** (Frontend)
+> - Shared infrastructure: SQL Server, Redis, RabbitMQ, MinIO
+
+---
+
+## 🚀 Overview
+
+This repository provides a complete **Docker-based development environment** for all SSSP services.  
+Each service runs in its own container and communicates via an internal Docker network (`sssp-net`).
+
+Your local machine runs the exact same environment used in CI/CD pipelines — no configuration drift, no “works on my machine.”
+
+---
+
+## 🧩 Folder Structure
+
+```
+sssp/
+├── apps/
+│   ├── api-dotnet/        # ASP.NET Core API
+│   ├── ai-fastapi/        # FastAPI microservice (Python)
+│   ├── web-dashboard/     # Frontend (Vite + Nginx)
+│
+├── deploy/
+│   └── docker/
+│       ├── docker-compose.yml
+│       ├── supervisord.conf
+│       └── README.md
+│
+├── .env.example
+└── README.md
+```
+
+---
+
+## ⚙️ Prerequisites
+
+| Tool | Minimum Version | Notes |
+|------|------------------|-------|
+| Docker Desktop | 4.x | Required for containers |
+| Git | Latest | For version control |
+| VS Code | Latest | Recommended IDE |
+| Python | 3.12+ | Optional for AI local testing |
+| .NET SDK | 8.0+ | Optional for API local builds |
+
+---
+
+## 🪄 Quick Start (Local Dev)
+### 2. Setup development environment
+./scripts/setup-dev.sh
+
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/your-org/sssp.git
+cd sssp
+```
+
+### 2️⃣ Prepare environment file
+```bash
+cp .env.example .env
+```
+
+### 3️⃣ Build & run everything
+```bash
+cd deploy/docker
+docker compose up -d --build
+```
+
+### 4️⃣ Verify services
+| Service | URL | Description |
+|----------|-----|-------------|
+| API (.NET) | http://localhost:8080 | Main backend |
+| FastAPI | http://localhost:8000/health | AI healthcheck |
+| Dashboard | http://localhost:5173 | Web UI |
+| RabbitMQ | http://localhost:15672 | Messaging UI |
+| MinIO Console | http://localhost:9001 | S3 storage UI |
+| SQL Server | localhost,1433 | Use SSMS or Azure Data Studio |
+
+---
+
+## 🧰 Developer Workflow
+
+| Action | Command |
+|--------|----------|
+| Rebuild all images | docker compose build --no-cache |
+| Restart containers | docker compose up -d |
+| Remove containers and volumes | docker compose down -v |
+| Check logs | docker compose logs -f |
+
+---
+
+## 🧩 Docker Compose Details
+
+Each service has its own Dockerfile under `apps/<service>/Dockerfile`.
+
+Example:
+```yaml
+ai-fastapi:
+  build:
+    context: ../../apps/ai-fastapi
+    dockerfile: Dockerfile
+  env_file:
+    - ../../.env
+  environment:
+    <<: *default-env
+  ports:
+    - "8000:8000"
+    - "50051:50051"
+```
+
+---
+
+## 🧱 Branching & CI/CD
+
+### Git Workflow
+1. main → protected branch
+2. feature/* → new features
+3. PR required before merge
+
+Example:
+```bash
+git checkout -b feature/add-login
+```
+
+### GitHub Actions CI
+```yaml
+name: Build & Test
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker images
+        run: docker compose -f deploy/docker/docker-compose.yml build
+```
+
+---
+
+## 🧠 Team Practices
+
+| Area | Best Practice |
+|------|----------------|
+| Environment | Use .env.example → copy to .env |
+| Dependencies | Pin versions |
+| Secrets | Never commit to git |
+| Code Reviews | Required on PRs |
+| Dockerfile names | Always `Dockerfile` |
+| Line endings | LF for Dockerfiles |
+| Documentation | Keep README updated |
+
+---
+
+## 🧹 .gitignore Essentials
+
+```
+.vs/
+bin/
+obj/
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+node_modules/
+dist/
+build/
+```
+
+---
+
+## 🧠 Troubleshooting
+
+| Issue | Fix |
+|--------|------|
+| `failed to read dockerfile` | Rename to `Dockerfile` (lowercase `f`) |
+| `ModuleNotFoundError: No module named 'fastapi'` | Create venv & install deps |
+| `Permission denied` in `.vs` | Close VS, delete `.vs/` |
+| `version` warning | Remove version: line from docker-compose.yml |
+
+---
+
+## 💬 Contributing
+
+1. Fork repo  
+2. Create feature branch  
+3. Commit with clear message  
+4. Push and open PR  
+5. Ensure Docker build passes before merge
+
+---
+
+## 🧭 Credits
+
+**Maintainers:** Project Lead + Team  
+**Tech Stack:** .NET, FastAPI, Redis, RabbitMQ, SQL Server, Docker, Vite
+
+---
+
+> _“If a new dev can run the app with one command, you’ve done DevOps right.”_
