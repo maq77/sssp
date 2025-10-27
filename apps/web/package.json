@@ -21,7 +21,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "vite": "^7.1.9"
+    "vite": "^7.1.12"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
