@@ -27,7 +27,7 @@ pandas==2.2.0
 scikit-learn==1.4.0
 
 # Caching and messaging
-redis==5.0.1
+redis==7.0.0
 aioredis==2.0.1
 
 # Utilities
