@@ -16,7 +16,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\""
   },
   "devDependencies": {
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.1",
     "@vitejs/plugin-react": "^5.0.4",
     "ts-node": "^10.9.2",
